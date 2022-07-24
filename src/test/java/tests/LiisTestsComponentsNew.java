@@ -5,10 +5,11 @@ import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
 
-public class LiisTestsComponents {
-    static Response getPosts() {
+public class LiisTestsComponentsNew {
+    static Response getPostsPagination(Integer page) {
         return given()
                 .contentType(ContentType.JSON)
+                .param("page", page)
                 .when()
                 .get("posts")
                 .then()
@@ -16,8 +17,8 @@ public class LiisTestsComponents {
                 .extract().response();
     }
 
-    static Response postPost(String login, String password, String title, String content) {
-        String bodyData = "{ \"title\": \"" + title + "\", " +
+    static Response postPostNew(String login, String password, String title, String content) {
+        String bodyData = "{ \"name\": \"" + title + "\", " +
                 "\"content\": \"" + content + "\" }";
 
         return given().auth()
@@ -31,18 +32,8 @@ public class LiisTestsComponents {
                 .extract().response();
     }
 
-    static Response getPost(Integer postID) {
-        return given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get("post/" + postID)
-                .then()
-                .statusCode(200)
-                .extract().response();
-    }
-
-    static Response putPost(String login, String password, String title, String content, Integer postID) {
-        String bodyData = "{ \"title\": \"" + title + "\", " +
+    static Response putPostNew(String login, String password, String title, String content, Integer postID) {
+        String bodyData = "{ \"name\": \"" + title + "\", " +
                 "\"content\": \"" + content + "\" }";
 
         return given().auth()
@@ -56,20 +47,10 @@ public class LiisTestsComponents {
                 .extract().response();
     }
 
-    static Response deletePost(String login, String password, Integer postID) {
-        return given().auth()
-                .basic(login, password)
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("post/" + postID)
-                .then()
-                .statusCode(204)
-                .extract().response();
-    }
-
-    static Response getComments() {
+    static Response getCommentsPagination(Integer page) {
         return given()
                 .contentType(ContentType.JSON)
+                .param("page", page)
                 .when()
                 .get("comments")
                 .then()
@@ -77,9 +58,9 @@ public class LiisTestsComponents {
                 .extract().response();
     }
 
-    static Response postComment(String login, String password, String title, String content, Integer postID) {
+    static Response postCommentNew(String login, String password, String title, String content, Integer postID) {
         String bodyData = "{ \"title\": \"" + title + "\", " +
-                "\"content\": \"" + content + "\", " +
+                "\"text\": \"" + content + "\", " +
                 "\"post\": " + postID + " }";
 
         return given().auth()
@@ -93,19 +74,9 @@ public class LiisTestsComponents {
                 .extract().response();
     }
 
-    static Response getComment(Integer commentID) {
-        return given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get("comment/" + commentID)
-                .then()
-                .statusCode(200)
-                .extract().response();
-    }
-
-    static Response putComment(String login, String password, String title, String content, Integer commentID) {
+    static Response putCommentNew(String login, String password, String title, String content, Integer commentID) {
         String bodyData = "{ \"title\": \"" + title + "\", " +
-                "\"content\": \"" + content + "\" }";
+                "\"text\": \"" + content + "\" }";
 
         return given().auth()
                 .basic(login, password)
@@ -118,27 +89,32 @@ public class LiisTestsComponents {
                 .extract().response();
     }
 
-    static Response deleteComment(String login, String password, Integer commentID) {
-        return given().auth()
-                .basic(login, password)
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("comment/" + commentID)
-                .then()
-                .statusCode(204)
-                .extract().response();
-    }
-
-    static Response signIn(String username, String email, String password) {
+    static Response signInNew(String username, String email, String password, String firstName, String middleName, String lastName) {
         String bodyData = "{ \"username\": \"" + username + "\", " +
                 "\"email\": \"" + email + "\", " +
-                "\"password\": \"" + password + "\" }";
+                "\"password\": \"" + password + "\", " +
+                "\"first_name\": \"" + firstName + "\", " +
+                "\"middle_name\": \"" + middleName + "\", " +
+                "\"last_name\": \"" + lastName + "\" }";
 
         return given()
                 .contentType(ContentType.JSON)
                 .body(bodyData)
                 .when()
                 .post("sign-in")
+                .then()
+                .extract().response();
+    }
+
+    static Response grantAdminRole(String login, String password, Integer userID) {
+        String bodyData = "{ \"user_id\": " + userID + " }";
+
+        return given().auth()
+                .basic(login, password)
+                .contentType(ContentType.JSON)
+                .body(bodyData)
+                .when()
+                .post("make_admin")
                 .then()
                 .statusCode(200)
                 .extract().response();

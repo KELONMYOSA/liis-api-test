@@ -10,17 +10,20 @@ import static io.restassured.RestAssured.filters;
 import static io.restassured.RestAssured.baseURI;
 import static listeners.CustomAllureListener.customAllureTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
-import static tests.LiisTestsComponents.*;
+import static tests.LiisTestsComponentsOld.*;
 
 @DisplayName("LIIS API-autotests v.1")
-public class LiisTests {
+public class LiisTestsOld {
     private static final String
             USERNAME = "admin",
             PASSWORD = "123";
 
+    private static final Integer
+            VERSION = 1;
+
     @BeforeAll
     static void beforeAll() {
-        baseURI = "https://hr.recruit.liis.su/qa0/v1/api/79825223592@yandex.ru/";
+        baseURI = "https://hr.recruit.liis.su/qa0/v" + VERSION + "/api/79825223592@yandex.ru/";
         filters(customAllureTemplate());
     }
 
@@ -81,6 +84,11 @@ public class LiisTests {
     @Owner("KELONMYOSA")
     @DisplayName("Sign-in test")
     void signInTest() {
-        signIn("ruby", "youremadsil", "123");
+        Response signInResponse = signIn("ruby", "youremadsil", "123");
+        String response = String.valueOf(signInResponse.statusCode());
+        if (!response.equals("200")) {
+            response = signInResponse.path("message");
+        }
+        assertThat(response).isIn("User with this username or email already exists", "200");
     }
 }
